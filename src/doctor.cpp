@@ -4,6 +4,10 @@ using namespace std;
 #include <iostream>
 #include <sstream>
 #include <fstream>
+#include <ctime>
+#include <cctype>
+#include <iomainip>
+
 
 #include "./../include/global.hh"
 #include "./../include/doctor.hh"
@@ -68,15 +72,16 @@ void doctor::saveMap()
 }
 void doctor::addPerson()
 {
-    if (hospital::doctorsList.size() == hospital::doctorsLimit)
+    system("cls"); // Xóa màn hình trước khi nhập
+    // Nhập tuổi cho đến khi đủ điều kiện
+    do
     {
-        cout << "\n\nDoctors limit reached, can't add more!\n\n";
-        return;
-    }
-    //18 and 65 are the age limits for registration of a new doctor;
-    person::addPerson(18, 65);
-    if ((age < 18) || (age > 65))
-        return;
+        person::addPerson(28, 65);
+        if (age < 28)
+            cout << "Age must be between 28 and 65. Please re-enter." << endl;
+    } while (age < 28);
+
+    // Nhập thông tin khác
     cout << "\nEnter the type of the doctor: \n";
     getline(cin >> ws, type);
     if (hospital::doctorsList.rbegin() != hospital::doctorsList.rend())
@@ -91,6 +96,10 @@ void doctor::addPerson()
     f.open("./data/doctorsHistory.csv", ios::app);
     f << firstName << "," << lastName << "," << gender << "," << age << "," << mobNumber << "," << add.addToStr() << "," << type << ",N,NA" << endl;
     f.close();
+    system("cls");
+    cout << "Thông tin bác sĩ đã được thêm:" << endl;
+    printDetails();
+    cout << "Date month year: " << getCurrentDate() << endl;
 
     cout << "\n"
          << firstName << " " << lastName << " registered successfully!\n";
@@ -351,13 +360,14 @@ void doctor::getDetailsFromHistory()
 }
 void doctor::removePerson()
 {
-    cout << "\nSearch for the doctor you want to remove.\n";
+    system("cls"); 
     getDetails();
     if (id == -1)
         return;
     if (appointmentsBooked > 0)
     {
         cout << "\nSelected doctor has appointments booked for today, can't be removed.\n\n";
+        system("pause");
         return;
     }
     hospital::doctorsList.erase(id);
@@ -390,5 +400,17 @@ void doctor::removePerson()
     remove("./data/doctorsHistory.csv");
     rename("./data/temp.csv", "./data/doctorsHistory.csv");
     cout << firstName << " " << lastName << " removed successfully!\n";
+    system("pause")
     return;
+    string getCurrentDate()
+{
+    time_t currentTime = time(nullptr);
+    struct tm localTime;
+    localtime_s(&localTime, &currentTime);
+    stringstream ss;
+    ss << setw(2) << setfill('0') << localTime.tm_mday << "/"
+       << setw(2) << setfill('0') << localTime.tm_mon + 1 << "/"
+       << localTime.tm_year + 1900;
+    return ss.str();
+}
 }
