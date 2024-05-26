@@ -4,6 +4,8 @@ using namespace std;
 #include <iostream>
 #include <sstream>
 #include <fstream>
+#include <ctime>
+#include <cstdlib> // Include cstdlib for system("clear")
 
 #include "./../include/global.hh"
 #include "./../include/doctor.hh"
